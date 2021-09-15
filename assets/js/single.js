@@ -16,18 +16,14 @@ var getRepoName = function() {
         // if no repo was given, redirect to the homepage
         document.location.replace("./index.html");
     }
-
-    getRepoIssues(repoName);
-    repoNameEl.textContent = repoName;
-}
+};
 
 var getRepoIssues = function(repo) {
-
-    console.log(repo);
 
     // format the github api url
     var apiUrl = "https://api.github.com/repos/" + repo + "/issues?direction=asc";
 
+    // make a request to the url
     fetch(apiUrl).then(function(response) {
         // request was successful
         if (response.ok) {
