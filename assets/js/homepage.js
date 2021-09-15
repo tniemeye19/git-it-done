@@ -4,19 +4,24 @@ var repoContainerEl = document.querySelector("#repos-container");
 var repoSearchTerm = document.querySelector("#repo-search-term");
 
 var formSubmitHandler = function(event) {
+    // prevent page from refreshing
     event.preventDefault();
     var username = nameInputEl.value.trim();
 
+    // get value from input element
+
     if (username) {
         getUserRepos(username);
+
+        // clear old content
+        repoContainerEl.textContent = "";
         nameInputEl.value = "";
     } else {
         alert("Please enter a GitHub username");
     }
-    console.log(event);
 };
 
-var getUserRepos = function() {
+var getUserRepos = function(user) {
     // format the github api url
     var apiUrl = "https://api.github.com/users" + user + "/repos";
 
@@ -25,16 +30,18 @@ var getUserRepos = function() {
         .then(function(response) {
             // request was successful
             if (response.ok) {
+                console.log(response);
                 response.json().then(function(data) {
+                    console.log(data);
                     displayRepos(data, user);
                 });
             } else {
-                alert("Error: GitHub User Not Found");
+                alert("Error: " + response.statusText);
             }
         })
         .catch(function(error) {
             // Notice this `.catch()` getting chained onto the end of the `.then` method
-            alert("Unabel to connect to GitHub");
+            alert("Unable to connect to GitHub");
         })
 };
 
@@ -45,7 +52,6 @@ var displayRepos = function(repos, searchTerm) {
         return;
     }
 
-    repoContainerEl.textContent = "";
     repoSearchTerm.textContent = searchTerm;
 
     // loop over repos
@@ -70,10 +76,10 @@ var displayRepos = function(repos, searchTerm) {
 
         // check if current repo has issues or not
         if (repos[i].open_issues_count > 0) {
-        statusEl.innerHTML =
-            "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
+            statusEl.innerHTML =
+                "<i class='fas fa-times status-icon icon-danger'></i>" + repos[i].open_issues_count + " issue(s)";
         } else {
-        statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
+            statusEl.innerHTML = "<i class='fas fa-check-square status-icon icon-success'></i>";
         }
 
         // append to container
@@ -84,4 +90,5 @@ var displayRepos = function(repos, searchTerm) {
     }
 };
 
+// add event listeners to forms
 userFormEl.addEventListener("submit", formSubmitHandler);
